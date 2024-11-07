@@ -15,33 +15,34 @@ export default function Page() {
     <div className="flex h-screen w-full items-center justify-center px-4">
       <Card className="mx-auto max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Cadastro</CardTitle>
           <CardDescription>
-            Digite seu email e senha para acessar a sua conta
+            Digite seu nome, email e senha para criar a sua conta
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-4">
             <div className="grid gap-2">
+              <Label htmlFor="name">Nome</Label>
+              <Input
+                id="name"
+                name="nome"
+                minLength={3}
+                maxLength={100}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
               <Label htmlFor="email">E-mail</Label>
               <Input
                 id="email"
-                name="email"
                 type="email"
+                name="email"
                 placeholder="email@example.com"
                 required
               />
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Senha</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Esqueceu a senha?
-                </Link>
-              </div>
               <Input
                 id="password"
                 type="password"
@@ -54,13 +55,13 @@ export default function Page() {
               />
             </div>
             <Button type="submit" className="w-full">
-              Login
+              Cadastrar
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Não possui uma conta?{" "}
-            <Link href="/register" className="underline">
-              Criar conta
+            Já possúi uma conta?{" "}
+            <Link href="/login" className="underline">
+              Login
             </Link>
           </div>
         </CardContent>
