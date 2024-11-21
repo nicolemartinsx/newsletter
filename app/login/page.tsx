@@ -1,4 +1,5 @@
-import Link from "next/link";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,10 +8,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { LoginSchema, Token } from "@/app/schema";
+import { kyInstance } from "../utils";
 
 export default function Page() {
+  const router = useRouter();
+  const form = useForm<LoginSchema>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: { email: "", senha: "" },
+  });
+  const mutation = useMutation({
+    mutationFn: async (parameters: LoginSchema) =>
+      Token.parse(
+        await kyInstance.post("/api/login", { json: parameters }).json()
+      ),
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      router.replace("/dashboard");
+    },
+    onError: (error) => {
+      form.setError("senha", { message: error.message });
+    },
+  });
+
+  function onSubmit(values: LoginSchema) {
+    mutation.mutate(values);
+  }
+
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">
       <Card className="mx-auto max-w-sm">
@@ -21,42 +59,49 @@ export default function Page() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">E-mail</Label>
-              <Input
-                id="email"
+          <Form {...form}>
+            <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
                 name="email"
-                type="email"
-                placeholder="email@example.com"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-mail</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="email@example.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Senha</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Esqueceu a senha?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
+              <FormField
+                control={form.control}
                 name="senha"
-                minLength={3}
-                maxLength={6}
-                pattern="[0-9]+"
-                title="Apenas números"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex justify-between items-center">
+                      Senha
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-          </form>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={mutation.isPending}
+              >
+                Login
+              </Button>
+            </form>
+          </Form>
           <div className="mt-4 text-center text-sm">
             Não possui uma conta?{" "}
             <Link href="/register" className="underline">
