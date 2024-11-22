@@ -14,7 +14,7 @@ export async function GET(
   const conn = await getConnection();
 
   const [[user]] = await conn.execute<mysql.RowDataPacket[]>(
-    "SELECT * FROM users WHERE email = ?",
+    "SELECT nome, email, senha FROM users WHERE email = ?",
     [email]
   );
   if (!user)
@@ -46,15 +46,18 @@ export async function PUT(
       { status: 404 }
     );
 
-  const payload = RegisterSchema.omit({ email: true }).parse(
+  const result = RegisterSchema.omit({ email: true }).safeParse(
     await request.json()
   );
+  if (!result.success)
+    return Response.json({ mensagem: "Dados invalidos" }, { status: 400 });
+  const payload = result.data;
   const [{ affectedRows }] = await conn.execute<mysql.ResultSetHeader>(
     `UPDATE users SET nome = ?, senha = ? WHERE email = ?`,
     [payload.nome, payload.senha, email]
   );
   if (affectedRows) {
-    return Response.json(payload);
+    return new Response(null, { status: 200 });
   }
   return Response.json({ mensagem: "Dados invalidos" }, { status: 400 });
 }

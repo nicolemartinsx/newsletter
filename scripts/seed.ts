@@ -15,7 +15,7 @@ mysql
         CREATE TABLE users (
             nome VARCHAR(100) NOT NULL,
             email VARCHAR(100) NOT NULL PRIMARY KEY,
-            senha VARCHAR(60) NOT NULL,
+            senha VARCHAR(6) NOT NULL,
             admin BOOLEAN NOT NULL DEFAULT FALSE
         );
     
