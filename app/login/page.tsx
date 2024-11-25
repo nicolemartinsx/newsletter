@@ -33,9 +33,7 @@ export default function Page() {
   });
   const mutation = useMutation({
     mutationFn: async (parameters: LoginSchema) =>
-      Token.parse(
-        await kyInstance.post("/api/login", { json: parameters }).json()
-      ),
+      Token.parse(await kyInstance.post("login", { json: parameters }).json()),
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
       router.replace("/dashboard");

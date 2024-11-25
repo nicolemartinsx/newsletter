@@ -45,7 +45,7 @@ export default function Page() {
   const updateMutation = useMutation({
     mutationFn: async (parameters: RegisterSchema) => {
       if (!token.data) return null;
-      return kyInstance.put(`/api/usuarios/${token.data.email}`, {
+      return kyInstance.put(`usuarios/${token.data.email}`, {
         json: parameters,
         headers: { Authorization: `Bearer ${token.data.token}` },
       });
@@ -60,7 +60,7 @@ export default function Page() {
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!token.data) return null;
-      return kyInstance.delete(`/api/usuarios/${token.data.email}`, {
+      return kyInstance.delete(`usuarios/${token.data.email}`, {
         headers: { Authorization: `Bearer ${token.data.token}` },
       });
     },
@@ -84,7 +84,7 @@ export default function Page() {
       if (!token.data) return undefined;
       return RegisterSchema.parse(
         await kyInstance
-          .get(`/api/usuarios/${token.data.email}`, {
+          .get(`usuarios/${token.data.email}`, {
             headers: { Authorization: `Bearer ${token.data.token}` },
           })
           .json()

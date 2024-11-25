@@ -34,7 +34,7 @@ export default function Page() {
   });
   const mutation = useMutation({
     mutationFn: async (parameters: RegisterSchema) =>
-      kyInstance.post("/api/usuarios", { json: parameters }),
+      kyInstance.post("usuarios", { json: parameters }),
     onSuccess: () => {
       toast.success("Conta criada com sucesso");
       router.replace("/login");

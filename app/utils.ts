@@ -1,6 +1,7 @@
 import ky from "ky";
 
 export const kyInstance = ky.extend({
+  prefixUrl: process.env.NEXT_PUBLIC_API_URL,
   retry: 0,
   hooks: {
     beforeError: [
