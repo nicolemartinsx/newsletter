@@ -1,9 +1,11 @@
 import mysql from "mysql2/promise";
+import "dotenv/config";
 
 mysql
   .createConnection({
-    user: "root",
-    password: "",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
     multipleStatements: true,
   })
   .then(async (conn) => {
