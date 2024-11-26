@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+export const RemoteAddress = z.object({
+  ip: z.string().ip({ version: "v4", message: "IP inválido" }),
+  port: z.coerce
+    .number()
+    .min(20000, "Deve ser maior que 20000")
+    .max(25000, "Deve ser menor que 25000"),
+  prefix: z.string(),
+});
+export type RemoteAddress = z.infer<typeof RemoteAddress>;
+
 export const User = z.object({
   nome: z
     .string()

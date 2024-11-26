@@ -18,42 +18,32 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { LoginSchema, Token } from "@/app/schema";
-import { kyInstance } from "../utils";
+import { RemoteAddress } from "@/app/schema";
 
 export default function Page() {
   const router = useRouter();
-  const form = useForm<LoginSchema>({
-    resolver: zodResolver(LoginSchema),
-    defaultValues: { email: "", senha: "" },
-  });
-  const mutation = useMutation({
-    mutationFn: async (parameters: LoginSchema) =>
-      Token.parse(await kyInstance.post("login", { json: parameters }).json()),
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
-      router.replace("/dashboard");
-    },
-    onError: (error) => {
-      form.setError("senha", { message: error.message });
-    },
+  const form = useForm<RemoteAddress>({
+    resolver: zodResolver(RemoteAddress),
+    defaultValues: { ip: "127.0.0.1", port: 22222, prefix: "api/" },
   });
 
-  function onSubmit(values: LoginSchema) {
-    mutation.mutate(values);
+  function onSubmit(values: RemoteAddress) {
+    localStorage.setItem(
+      "api-url",
+      `http://${values.ip}:${values.port}/${values.prefix}`
+    );
+    router.replace("/login");
   }
 
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Endereço do servidor</CardTitle>
           <CardDescription>
-            Digite seu email e senha para acessar a sua conta
+            Digite o IP e porta para acessar o sistema
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -61,16 +51,12 @@ export default function Page() {
             <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
-                name="email"
+                name="ip"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>E-mail</FormLabel>
+                    <FormLabel>IP</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="email@example.com"
-                        {...field}
-                      />
+                      <Input type="text" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -78,34 +64,37 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="senha"
+                name="port"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex justify-between items-center">
-                      Senha
+                      Porta
                     </FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={mutation.isPending}
-              >
-                Login
+              <FormField
+                control={form.control}
+                name="prefix"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prefixo</FormLabel>
+                    <FormControl>
+                      <Input type="text" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full">
+                Acessar
               </Button>
             </form>
           </Form>
-          <div className="mt-4 text-center text-sm">
-            Não possui uma conta?{" "}
-            <Link href="/register" className="underline">
-              Criar conta
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>

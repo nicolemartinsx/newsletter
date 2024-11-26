@@ -1,7 +1,11 @@
+"use client";
+
 import ky from "ky";
 
 export const kyInstance = ky.extend({
-  prefixUrl: process.env.NEXT_PUBLIC_API_URL,
+  prefixUrl:
+    (typeof window === "object" && localStorage.getItem("api-url")) ||
+    "http://127.0.0.1:22222/api/",
   retry: 0,
   hooks: {
     beforeError: [
