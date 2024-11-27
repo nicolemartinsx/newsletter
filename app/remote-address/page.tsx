@@ -34,7 +34,7 @@ export default function Page() {
       "api-url",
       `http://${values.ip}:${values.port}/${values.prefix}`
     );
-    router.replace("/login");
+    router.push("/login");
   }
 
   return (

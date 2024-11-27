@@ -12,6 +12,7 @@ import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToken } from "./utils";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function DashboardLayout({
   children,
@@ -19,6 +20,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const token = useToken();
   if (token.isSuccess && !token.data) {
     toast.error("Você precisa fazer login para acessar o dashboard");
@@ -27,6 +29,7 @@ export default function DashboardLayout({
 
   function onLogout() {
     localStorage.removeItem("token");
+    queryClient.removeQueries({ queryKey: ["token"] });
     router.push("/login");
   }
 
