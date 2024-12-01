@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import { getConnection } from "../utils";
+import { getConnection, hasValidToken } from "../utils";
 import { RegisterSchema } from "@/app/schema";
 
 const invalidDataError = Response.json(
@@ -29,4 +29,17 @@ export async function POST(request: Request) {
     return new Response(null, { status: 201 });
   }
   return invalidDataError;
+}
+
+export async function GET(request: Request) {
+  if (!(await hasValidToken(request))) {
+    return new Response(null, { status: 401 });
+  }
+
+  const conn = await getConnection();
+
+  const [users] = await conn.execute<mysql.RowDataPacket[]>(
+    "SELECT nome, email, senha FROM users"
+  );
+  return Response.json(users);
 }
