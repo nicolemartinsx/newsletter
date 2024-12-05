@@ -12,7 +12,8 @@ import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToken } from "./utils";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { kyInstance } from "../utils";
 
 export default function DashboardLayout({
   children,
@@ -27,10 +28,25 @@ export default function DashboardLayout({
     router.replace("/login");
   }
 
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      if (!token.data) return null;
+      return kyInstance.post(`logout`, {
+        headers: { Authorization: `Bearer ${token.data.token}` },
+      });
+    },
+    onSuccess: () => {
+      localStorage.removeItem("token");
+      queryClient.removeQueries({ queryKey: ["token"] });
+      router.push("/login");
+    },
+    onError: (error) => {
+      toast.error(`Erro ao fazer logout: ${error.message}`);
+    },
+  });
+
   function onLogout() {
-    localStorage.removeItem("token");
-    queryClient.removeQueries({ queryKey: ["token"] });
-    router.push("/login");
+    logoutMutation.mutate();
   }
 
   function onProfile() {
