@@ -40,4 +40,6 @@ export const Token = z.object({
 });
 export type Token = z.infer<typeof Token>;
 
-export const TokenWithUser = User.omit({ senha: true }).merge(Token);
+export const TokenWithUser = User.partial({ nome: true })
+  .omit({ senha: true })
+  .merge(Token);

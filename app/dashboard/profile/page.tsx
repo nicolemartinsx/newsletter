@@ -110,6 +110,10 @@ export default function Page() {
       toast.error(`Erro ao recuperar dados da conta: ${user.error.message}`);
   }, [user.error]);
 
+  useEffect(() => {
+    if (token.error) toast.error(`Token sem os atributos obrigatórios!`);
+  }, [token.error]);
+
   return (
     <div className="flex w-full items-center justify-center px-4">
       {token.isFetching || user.isFetching ? (
