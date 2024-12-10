@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -31,11 +31,13 @@ export default function Page() {
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: "", senha: "" },
   });
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (parameters: LoginSchema) =>
       Token.parse(await kyInstance.post("login", { json: parameters }).json()),
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
+      queryClient.invalidateQueries({ queryKey: ["token"] });
       router.replace("/dashboard");
     },
     onError: (error) => {

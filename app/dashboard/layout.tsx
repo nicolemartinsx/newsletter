@@ -12,8 +12,9 @@ import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToken } from "./utils";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { kyInstance } from "../utils";
+import { useEffect } from "react";
 
 export default function DashboardLayout({
   children,
@@ -21,12 +22,14 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const token = useToken();
-  if (token.isSuccess && !token.data) {
-    toast.error("Você precisa fazer login para acessar o dashboard");
-    router.replace("/login");
-  }
+
+  useEffect(() => {
+    if (token.isSuccess && !token.data) {
+      toast.error("Você precisa fazer login para acessar o dashboard");
+      router.replace("/login");
+    }
+  }, [router, token]);
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -37,7 +40,6 @@ export default function DashboardLayout({
     },
     onSuccess: () => {
       localStorage.removeItem("token");
-      queryClient.removeQueries({ queryKey: ["token"] });
       router.push("/login");
     },
     onError: (error) => {
