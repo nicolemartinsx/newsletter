@@ -43,3 +43,16 @@ export type Token = z.infer<typeof Token>;
 export const TokenWithUser = User.partial({ nome: true })
   .omit({ senha: true })
   .merge(Token);
+
+export const Category = z.object({
+  id: z.number().int(),
+  nome: z
+    .string()
+    .min(1, "Deve conter ao menos 1 caracter")
+    .max(150, "Deve conter no máximo 100 caracteres"),
+});
+export const Categories = z.array(Category);
+export type Category = z.infer<typeof Category>;
+
+export const CategoryPayload = Category.omit({ id: true });
+export type CategoryPayload = z.infer<typeof CategoryPayload>;

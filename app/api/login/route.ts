@@ -21,7 +21,8 @@ export async function POST(request: Request) {
         typ: "JWT",
       })
       .setIssuedAt()
-      .setExpirationTime("15 mins")
+      // .setExpirationTime("15 mins")
+      .setExpirationTime("1y")
       .sign(JWT_SECRET);
     return Response.json({ token });
   }

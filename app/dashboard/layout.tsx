@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { kyInstance } from "../utils";
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function DashboardLayout({
   children,
@@ -56,9 +57,19 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex-col flex">
-      <div className="border-b">
-        <div className="flex h-16 items-center px-4">
+    <div className="flex-col flex items-center">
+      <div className="border-b w-full flex justify-center">
+        <div className="max-w-screen-md w-full flex h-16 items-center px-4">
+          <nav className="ml-4">
+            {token.data?.admin && (
+              <Link
+                href="/dashboard/categories"
+                className="text-sm font-medium"
+              >
+                Categorias
+              </Link>
+            )}
+          </nav>
           <div className="ml-auto flex items-center space-x-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -79,7 +90,9 @@ export default function DashboardLayout({
           </div>
         </div>
       </div>
-      <div className="flex-1 space-y-4 p-8 pt-6">{children}</div>
+      <div className="flex-1 flex justify-center space-y-4 p-8 pt-6 max-w-screen-md w-full">
+        {children}
+      </div>
     </div>
   );
 }

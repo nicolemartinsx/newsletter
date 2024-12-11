@@ -17,12 +17,15 @@ export async function getConnection() {
 }
 
 export async function hasValidToken(request: Request) {
-  const token = request.headers.get("Authorization");
-  if (token) {
+  const authorization = request.headers.get("Authorization");
+  if (authorization) {
     try {
-      await jwtVerify(token.replace("Bearer ", ""), JWT_SECRET);
-      return true;
+      const verified = await jwtVerify(
+        authorization.replace("Bearer ", ""),
+        JWT_SECRET
+      );
+      return verified.payload;
     } catch {}
   }
-  return false;
+  return null;
 }
