@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useToken } from "./utils";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
@@ -23,6 +23,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const token = useToken();
 
   useEffect(() => {
@@ -60,14 +61,40 @@ export default function DashboardLayout({
     <div className="flex-col flex items-center">
       <div className="border-b w-full flex justify-center">
         <div className="max-w-screen-md w-full flex h-16 items-center px-4">
-          <nav className="ml-4">
+          <nav className="ml-4 flex gap-8">
+            <Link
+              href="/dashboard"
+              className={`text-sm ${
+                pathname === "/dashboard"
+                  ? "underline font-bold"
+                  : "font-medium"
+              }`}
+            >
+              Painel
+            </Link>
             {token.data?.admin && (
-              <Link
-                href="/dashboard/categories"
-                className="text-sm font-medium"
-              >
-                Categorias
-              </Link>
+              <>
+                <Link
+                  href="/dashboard/categories"
+                  className={`text-sm ${
+                    pathname === "/dashboard/categories"
+                      ? "underline font-bold"
+                      : "font-medium"
+                  }`}
+                >
+                  Categorias
+                </Link>
+                <Link
+                  href="/dashboard/news"
+                  className={`text-sm ${
+                    pathname === "/dashboard/news"
+                      ? "underline font-bold"
+                      : "font-medium"
+                  }`}
+                >
+                  Avisos
+                </Link>
+              </>
             )}
           </nav>
           <div className="ml-auto flex items-center space-x-4">

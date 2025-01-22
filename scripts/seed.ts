@@ -25,9 +25,17 @@ mysql
           id INTEGER(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
           nome VARCHAR(150) NOT NULL
         );
+
+        CREATE TABLE news (
+          id INTEGER(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+          idCategoria INTEGER(11) NOT NULL,
+          descricao VARCHAR(500) NOT NULL,
+          FOREIGN KEY (idCategoria) REFERENCES categories(id)
+        );
     
         INSERT INTO users VALUES ('Admin', 'admin@email.com', '123456', TRUE);
         INSERT INTO categories VALUES (1, 'Acidentes');
+        INSERT INTO news VALUES (1, 1, 'Aconteceu um acidente na BR 153');
     `);
     await conn.end();
   });

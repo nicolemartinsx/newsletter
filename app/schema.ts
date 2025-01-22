@@ -56,3 +56,20 @@ export type Category = z.infer<typeof Category>;
 
 export const CategoryPayload = Category.omit({ id: true });
 export type CategoryPayload = z.infer<typeof CategoryPayload>;
+
+export const News = z.object({
+  id: z.number().int(),
+  idCategoria: z.coerce
+    .number({ invalid_type_error: "Selecione uma categoria" })
+    .int()
+    .positive(),
+  descricao: z
+    .string()
+    .min(1, "Deve conter ao menos 1 caracter")
+    .max(500, "Deve conter no máximo 500 caracteres"),
+});
+export const NewsArray = z.array(News);
+export type News = z.infer<typeof News>;
+
+export const NewsPayload = News.omit({ id: true });
+export type NewsPayload = z.infer<typeof NewsPayload>;
