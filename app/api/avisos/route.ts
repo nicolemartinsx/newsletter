@@ -35,16 +35,3 @@ export async function POST(request: Request) {
   }
   return invalidDataError;
 }
-
-export async function GET(request: Request) {
-  if (!(await hasValidToken(request))) {
-    return new Response(null, { status: 401 });
-  }
-
-  const conn = await getConnection();
-
-  const [news] = await conn.execute<mysql.RowDataPacket[]>(
-    "SELECT * FROM news"
-  );
-  return Response.json(news);
-}

@@ -52,6 +52,7 @@ import {
 } from "@/components/ui/select";
 
 export default function Page() {
+  const [selectedCategory, setSelectedCategory] = useState<number>();
   const [toEdit, setToEdit] = useState<News | null | undefined>(undefined);
   const [toDelete, setToDelete] = useState<News>();
   const form = useForm<NewsPayload>({
@@ -63,18 +64,20 @@ export default function Page() {
 
   const token = useToken();
   const news = useQuery({
-    queryKey: ["news"],
+    queryKey: ["news", selectedCategory],
     queryFn: async () => {
       if (!token.data) return undefined;
       return NewsArray.parse(
         await kyInstance
-          .get(`avisos`, {
-            headers: { Authorization: `Bearer ${token.data.token}` },
+          .get(`avisos/${selectedCategory}`, {
+            headers: {
+              Authorization: `Bearer ${token.data.token}`,
+            },
           })
           .json()
       );
     },
-    enabled: !!token.data,
+    enabled: !!token.data && !!selectedCategory,
   });
   const categories = useQuery({
     queryKey: ["categories"],
@@ -83,7 +86,9 @@ export default function Page() {
       return Categories.parse(
         await kyInstance
           .get(`categorias`, {
-            headers: { Authorization: `Bearer ${token.data.token}` },
+            headers: {
+              Authorization: `Bearer ${token.data.token}`,
+            },
           })
           .json()
       );
@@ -176,15 +181,9 @@ export default function Page() {
     setToDelete(undefined);
   }
 
-  if (!news.isSuccess) {
-    return <Loader />;
-  }
   return (
     <div className="flex flex-col w-full gap-4">
       <Dialog open={toEdit !== undefined} onOpenChange={onEditDialogClose}>
-        <Button className="self-end" onClick={onCreateClick}>
-          Criar
-        </Button>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Categoria</DialogTitle>
@@ -270,39 +269,60 @@ export default function Page() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-24">ID</TableHead>
-            <TableHead>Nome</TableHead>
-            <TableHead className="w-40">Ações</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {news.data?.map((c) => (
-            <TableRow key={c.id}>
-              <TableCell className="font-medium">{c.id}</TableCell>
-              <TableCell>{c.descricao}</TableCell>
-              <TableCell className="flex gap-4">
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={() => onEditClick(c)}
-                >
-                  <Edit />
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => onDeleteClick(c)}
-                >
-                  <Trash2 />
-                </Button>
-              </TableCell>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Avisos por categoria</h1>
+        <Button className="self-end" onClick={onCreateClick}>
+          Criar
+        </Button>
+      </div>
+      <div className="flex gap-4">
+        {categories.data?.map((c) => (
+          <Button
+            key={c.id}
+            variant="outline"
+            onClick={() => setSelectedCategory(c.id)}
+            className={selectedCategory === c.id ? "bg-slate-200" : ""}
+          >
+            {c.nome}
+          </Button>
+        ))}
+      </div>
+      {news.isLoading && <Loader />}
+      {news.isSuccess && (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-24">ID</TableHead>
+              <TableHead>Nome</TableHead>
+              <TableHead className="w-40">Ações</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {news.data?.map((c) => (
+              <TableRow key={c.id}>
+                <TableCell className="font-medium">{c.id}</TableCell>
+                <TableCell>{c.descricao}</TableCell>
+                <TableCell className="flex gap-4">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => onEditClick(c)}
+                  >
+                    <Edit />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => onDeleteClick(c)}
+                  >
+                    <Trash2 />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }
