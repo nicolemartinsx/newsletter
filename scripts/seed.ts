@@ -31,6 +31,7 @@ mysql
           idCategoria INTEGER(11) NOT NULL,
           descricao VARCHAR(500) NOT NULL,
           FOREIGN KEY (idCategoria) REFERENCES categories(id)
+          ON DELETE CASCADE
         );
     
         INSERT INTO users VALUES ('Admin', 'admin@email.com', '123456', TRUE);
